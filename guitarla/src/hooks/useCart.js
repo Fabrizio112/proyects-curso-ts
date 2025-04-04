@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { db } from "../data/db"
 
 const useCart=()=>{  
   const initialCart=()=>{
     const localStorageCart=localStorage.getItem("cart")
     return localStorageCart ? JSON.parse(localStorageCart) : []
   }  
+  const [guitars]=useState(db)
   const[cart,setCart]=useState(initialCart())
   const MAX_CART=5
   const MIN_CART=1
@@ -51,14 +53,19 @@ const useCart=()=>{
   useEffect(()=>{
     localStorage.setItem("cart",JSON.stringify(cart))
   },[cart])
+  const isEmpty =useMemo(() => cart.length === 0 ,[cart])
+  const totalPrice =useMemo( () => cart.reduce((total,guitar)=> total + (guitar.price * guitar.quantity) ,0),[cart])
 
     return {
+        guitars,
         cart,
         clearCart,
         addToCart,
         removeFromCart,
         addQuantity,
-        decreaseQuantity
+        decreaseQuantity,
+        isEmpty,
+        totalPrice
     }
 }
 

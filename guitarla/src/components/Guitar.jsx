@@ -1,5 +1,5 @@
 function Guitar({guitar,addToCart}) {
-    const{id,name,price,description,image}=guitar
+    const{name,price,description,image}=guitar
     return ( <div className="col-md-6 col-lg-4 my-4 row align-items-center">
         <div className="col-4">
             <img className="img-fluid" src={`/img/${image}.jpg`} alt="imagen guitarra"/>
