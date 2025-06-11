@@ -111,4 +111,5 @@ export const budgetReducer=(
             filterCategory:action.payload.category
         }
     }
+    return state;
 }
