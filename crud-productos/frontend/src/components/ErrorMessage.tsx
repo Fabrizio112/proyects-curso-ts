@@ -1,0 +1,10 @@
+import type { PropsWithChildren } from "react";
+
+function ErrorMessage({children}:PropsWithChildren) {
+    return (
+    <div className="text-center my-4 bg-red-600 text-white font-bolder p-3 uppercase">
+        {children}
+    </div>  );
+}
+
+export default ErrorMessage;
