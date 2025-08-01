@@ -1,6 +1,6 @@
 import { Form, Link, redirect, useActionData, useLoaderData, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
-import { crearProducto, editarProducto, obtenerProductoPorID } from "../service/ProductService";
+import {editarProducto, obtenerProductoPorID } from "../service/ProductService";
 import type { Product } from "../schemas/productSchemas";
 
 export async function loader({params} :LoaderFunctionArgs){
