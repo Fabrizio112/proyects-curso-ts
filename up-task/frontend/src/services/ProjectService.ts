@@ -1,0 +1,68 @@
+import { dashboardProjectSchema, projectSchema, type Project, type ProjectFormData } from "../types";
+import api from "../lib/axios";
+import { isAxiosError } from "axios";
+
+export async function createProject(formData: ProjectFormData) {
+    try {
+        const { data } = await api.post("/projects", formData)
+        return data
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw new Error("Hubo un error al crear el proyecto")
+        }
+    }
+}
+export async function getAllProjects() {
+    try {
+        const { data } = await api.get("/projects")
+        const response = dashboardProjectSchema.safeParse(data)
+        if (response.success) {
+            return response.data
+        }
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw new Error("Hubo un error al obtener los proyectos")
+        }
+    }
+}
+export async function getProjectById(id: Project["_id"]) {
+    try {
+        const { data } = await api.get(`/projects/${id}`)
+        const response = projectSchema.safeParse(data)
+        if (response.success) {
+            return response.data
+        }
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw new Error("Hubo un error al obtener el proyecto")
+        }
+    }
+}
+
+
+type UpdateProjectType = {
+    formData: ProjectFormData,
+    projectId: Project["_id"]
+}
+
+export async function updateProject({ formData, projectId }: UpdateProjectType) {
+    try {
+        const { data } = await api.put<string>(`/projects/${projectId}`, formData)
+        return data
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw new Error("Hubo un error al editar el proyecto")
+        }
+    }
+}
+
+export async function deleteProject(id: Project["_id"]) {
+    try {
+        const { data } = await api.delete<string>(`/projects/${id}`)
+        return data;
+    } catch (error) {
+        if (isAxiosError(error)) {
+            throw new Error("Hubo un error al obtener el proyecto")
+        }
+    }
+}

@@ -43,11 +43,11 @@ taskRouter.delete("/:projectId/tasks/:taskId",
     handleInputErrors,
     TaskController.deleteTask);
 
-taskRouter.post("/:projectId/tasks/:taskId/status"),
+taskRouter.post("/:projectId/tasks/:taskId/status",
     param("taskId").isMongoId().withMessage("ID no valido"),
     body("status").notEmpty().withMessage("El estado no puede ir vacio"),
     handleInputErrors,
-    TaskController.updateStatus;
+    TaskController.updateStatus);
 
 
 export default taskRouter;
