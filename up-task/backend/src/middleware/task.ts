@@ -1,36 +1,48 @@
-import { Request,Response,NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import Task, { ITask } from "../models/Task";
 
-declare global{
-    namespace Express{
-        interface Request{
-            task:ITask
+declare global {
+    namespace Express {
+        interface Request {
+            task: ITask
         }
     }
 }
 
-export async function validateTaskExists(req:Request,res:Response,next:NextFunction){
+export async function validateTaskExists(req: Request, res: Response, next: NextFunction) {
     try {
-        const {taskId}=req.params
-        const task= await Task.findById(taskId)
-        if(!task){
-            const error= new Error("Tarea No Encontrada")
-            res.status(404).json({error:error.message})
+        const { taskId } = req.params
+        const task = await Task.findById(taskId)
+        if (!task) {
+            const error = new Error("Tarea No Encontrada")
+            res.status(404).json({ error: error.message })
         }
-        req.task=task
+        req.task = task
         next()
     } catch (error) {
-        res.status(500).json({error:"Hubo un error"})
+        res.status(500).json({ error: "Hubo un error" })
     }
 }
-export async function taskBelongsToProyect(req:Request,res:Response,next:NextFunction){
+export async function taskBelongsToProyect(req: Request, res: Response, next: NextFunction) {
     try {
-       if(req.task.project.toString() !== req.project.id.toString()){
-            const error= new Error("Accion No Valida")
-            res.status(400).json({error:error.message})
+        if (req.task.project.toString() !== req.project.id.toString()) {
+            const error = new Error("Accion No Valida")
+            res.status(400).json({ error: error.message })
         }
         next()
     } catch (error) {
-        res.status(500).json({error:"Hubo un error"})
+        res.status(500).json({ error: "Hubo un error" })
+    }
+}
+export async function hasAutorization(req: Request, res: Response, next: NextFunction) {
+    try {
+
+        if (req.user.id.toString() !== req.project.manager.toString()) {
+            const error = new Error("Accion No Valida")
+            res.status(400).json({ error: error.message })
+        }
+        next()
+    } catch (error) {
+        res.status(500).json({ error: "Hubo un error" })
     }
 }

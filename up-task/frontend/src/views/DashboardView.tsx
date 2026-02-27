@@ -1,31 +1,25 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { deleteProject, getAllProjects } from "../services/ProjectService";
-
+import { useQuery } from "@tanstack/react-query";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getAllProjects } from "../services/ProjectService";
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
-import { toast } from "react-toastify";
+import { useAuth } from "../hooks/useAuth";
+import isManager from "../helper/policies";
+import DeleteProjectModal from "../components/projects/DeleteProjectModal";
 
 
 
 function DashboardView() {
-    const queryClient = useQueryClient()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const { data: userData, isLoading: authLoading } = useAuth()
     const { data, isLoading } = useQuery({
         queryKey: ["projects"],
         queryFn: getAllProjects
     })
-    const { mutate } = useMutation({
-        mutationFn: deleteProject,
-        onError: () => {
 
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["projects"] })
-            toast.success(data)
-        }
-    })
-    if (isLoading) return ("Cargando ....")
+    if (isLoading && authLoading) return ("Cargando ....")
     if (data) return (
         <>
             <h1 className="text-5xl font-black"> Mis Proyectos</h1>
@@ -35,12 +29,20 @@ function DashboardView() {
                     Nuevo Proyecto
                 </Link>
             </nav>
-            {data.length ? (
+            {data && userData ? (
                 <ul role="list" className="divide-y divide-gray-100 border border-gray-100 mt-10 bg-white shadow-lg">
                     {data.map((project) => (
                         <li key={project._id} className="flex justify-between gap-x-6 px-5 py-10">
                             <div className="flex min-w-0 gap-x-4">
                                 <div className="min-w-0 flex-auto space-y-2">
+                                    <div className="mb-3">
+                                        {
+                                            isManager(project.manager, userData._id) ?
+                                                <p className="font-bold text-xs uppercase bg-indigo-50 text-indigo-500 border-2 border-indigo-500 rounded-lg inline-block py-1 px-5">Manager</p> :
+                                                <p className="font-bold text-xs uppercase bg-green-50 text-green-500 border-2 border-green-500 rounded-lg inline-block py-1 px-5">Colaborador</p>
+
+                                        }
+                                    </div>
                                     <Link to={`/projects/${project._id}`}
                                         className="text-gray-600 cursor-pointer hover:underline text-3xl font-bold"
                                     >{project.projectName}</Link>
@@ -71,21 +73,24 @@ function DashboardView() {
                                                     Ver Proyecto
                                                 </Link>
                                             </Menu.Item>
-                                            <Menu.Item>
-                                                <Link to={`projects/${project._id}/edit`}
-                                                    className='block px-3 py-1 text-sm leading-6 text-gray-900'>
-                                                    Editar Proyecto
-                                                </Link>
-                                            </Menu.Item>
-                                            <Menu.Item>
-                                                <button
-                                                    type='button'
-                                                    className='block px-3 py-1 text-sm leading-6 text-red-500 cursor-pointer'
-                                                    onClick={() => { mutate(project._id) }}
-                                                >
-                                                    Eliminar Proyecto
-                                                </button>
-                                            </Menu.Item>
+                                            {isManager(project.manager, userData._id) &&
+                                                <>
+                                                    <Menu.Item>
+                                                        <Link to={`projects/${project._id}/edit`}
+                                                            className='block px-3 py-1 text-sm leading-6 text-gray-900'>
+                                                            Editar Proyecto
+                                                        </Link>
+                                                    </Menu.Item>
+                                                    <Menu.Item>
+                                                        <button
+                                                            type='button'
+                                                            className='block px-3 py-1 text-sm leading-6 text-red-500 cursor-pointer'
+                                                            onClick={() => { navigate(location.pathname + `?deleteProject=${project._id}`) }}
+                                                        >
+                                                            Eliminar Proyecto
+                                                        </button>
+                                                    </Menu.Item>
+                                                </>}
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>
@@ -100,7 +105,10 @@ function DashboardView() {
                     </Link>
                 </p>
             )}
-        </>);
+
+            <DeleteProjectModal />
+        </>
+    );
 
 }
 

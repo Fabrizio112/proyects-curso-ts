@@ -6,6 +6,7 @@ import { getTaskById, updateTaskStatus } from '../../services/TaskService';
 import { formatDate, statusTranslations } from '../../helper';
 import { toast } from 'react-toastify';
 import type { TaskStatus } from '../../types';
+import NotesPanel from '../notes/NotesPanel';
 
 
 export default function TaskModalDetails() {
@@ -74,6 +75,14 @@ export default function TaskModalDetails() {
                                     >{data.name}
                                     </Dialog.Title>
                                     <p className='text-lg text-slate-500 mb-2'>Descripción: {data.description}</p>
+
+                                    {data.completedBy && (
+                                        <p>
+                                            <span className='font-bold text-slate-600'>Estado Actualizado por :</span>
+                                            {data.completedBy.name}
+                                        </p>
+                                    )}
+
                                     <div className='my-5 space-y-3'>
                                         <label className='font-bold'>Estado Actual: {data.status}</label>
                                         <select className='w-full p-3 bg-white border border-gray-300'
@@ -84,6 +93,7 @@ export default function TaskModalDetails() {
                                             ))}
                                         </select>
                                     </div>
+                                    <NotesPanel notes={data.notes} />
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>

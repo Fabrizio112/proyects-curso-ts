@@ -3,14 +3,15 @@ import { TaskController } from "../controllers/TaskController";
 import { validateProjectExists } from "../middleware/project";
 import { body, param } from "express-validator";
 import { handleInputErrors } from "../middleware/validation";
-import { taskBelongsToProyect, validateTaskExists } from "../middleware/task";
+import { hasAutorization, taskBelongsToProyect, validateTaskExists } from "../middleware/task";
 
 
-const taskRouter=Router()
+const taskRouter = Router()
 
-taskRouter.param("projectId",validateProjectExists)
+taskRouter.param("projectId", validateProjectExists)
 
 taskRouter.post("/:projectId/tasks",
+    hasAutorization,
     body("name")
         .notEmpty().withMessage("El nombre de la tarea es obligatorio"),
     body("description")
@@ -19,10 +20,10 @@ taskRouter.post("/:projectId/tasks",
     TaskController.createTask);
 
 
-taskRouter.get("/:projectId/tasks",TaskController.getAllTask);
+taskRouter.get("/:projectId/tasks", TaskController.getAllTask);
 
-taskRouter.param("taskId",validateTaskExists)
-taskRouter.param("taskId",taskBelongsToProyect)
+taskRouter.param("taskId", validateTaskExists)
+taskRouter.param("taskId", taskBelongsToProyect)
 
 taskRouter.get("/:projectId/tasks/:taskId",
     param("taskId").isMongoId().withMessage("ID no valido"),
@@ -30,6 +31,7 @@ taskRouter.get("/:projectId/tasks/:taskId",
     TaskController.getTaskByID);
 
 taskRouter.put("/:projectId/tasks/:taskId",
+    hasAutorization,
     param("taskId").isMongoId().withMessage("ID no valido"),
     body("name")
         .notEmpty().withMessage("El nombre de la tarea es obligatorio"),
@@ -39,6 +41,7 @@ taskRouter.put("/:projectId/tasks/:taskId",
     TaskController.updateTask);
 
 taskRouter.delete("/:projectId/tasks/:taskId",
+    hasAutorization,
     param("taskId").isMongoId().withMessage("ID no valido"),
     handleInputErrors,
     TaskController.deleteTask);

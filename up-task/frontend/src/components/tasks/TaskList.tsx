@@ -3,7 +3,8 @@ import type { Task } from "../../types";
 import TaskCard from "./TaskCard";
 
 type TaskListType = {
-    tasks: Task[]
+    tasks: Task[],
+    canEdit: boolean
 }
 type GroupedTask = {
     [key: string]: Task[]
@@ -16,7 +17,7 @@ const initialStatusGroups: GroupedTask = {
     completed: []
 }
 
-function TaskList({ tasks }: TaskListType) {
+function TaskList({ tasks, canEdit }: TaskListType) {
     const groupedTasks = tasks.reduce((acc, task) => {
         let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
         currentGroup = [...currentGroup, task]
@@ -43,7 +44,7 @@ function TaskList({ tasks }: TaskListType) {
                             {tasks.length === 0 ? (
                                 <li className="text-gray-500 text-center pt-3">No Hay tareas</li>
                             ) : (
-                                tasks.map(task => <TaskCard key={task._id} task={task} />)
+                                tasks.map(task => <TaskCard key={task._id} task={task} canEdit={canEdit} />)
                             )}
                         </ul>
                     </div>
