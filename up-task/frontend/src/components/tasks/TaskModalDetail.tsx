@@ -76,9 +76,11 @@ export default function TaskModalDetails() {
                                     </Dialog.Title>
                                     <p className='text-lg text-slate-500 mb-2'>Descripción: {data.description}</p>
 
-                                    {data.completedBy && (
+                                    {data.completedBy && typeof data.completedBy !== "string" && (
                                         <p>
-                                            <span className='font-bold text-slate-600'>Estado Actualizado por :</span>
+                                            <span className='font-bold text-slate-600'>
+                                                Estado Actualizado por :
+                                            </span>
                                             {data.completedBy.name}
                                         </p>
                                     )}

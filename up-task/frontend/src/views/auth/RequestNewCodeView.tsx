@@ -19,7 +19,7 @@ export default function RequestNewCodeView() {
             toast.success(data)
         }
     })
-    const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues });
+    const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
 
     const handleRequestCode = (formData: RequestConfirmationCodeForm) => mutate(formData)
 
