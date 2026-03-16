@@ -18,7 +18,6 @@ function DashboardView() {
         queryKey: ["projects"],
         queryFn: getAllProjects
     })
-    console.log(isLoading, authLoading, data, userData)
 
     if (isLoading && authLoading) return ("Cargando ....")
     if (data) return (
